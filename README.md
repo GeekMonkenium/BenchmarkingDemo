@@ -2,7 +2,7 @@
 
 ## Overview ##
 
-This is an example project for running a [JMeter][1] test with the [JMeter Maven Plugin][2] and the [JMeter Analysis Maven Plugin][2] out of the box.
+This is an example project for running a JMeter test with the JMeter Maven Plugin and the JMeter Analysis Maven Plugin.
 
 
 ## Usage ##
