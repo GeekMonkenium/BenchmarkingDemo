@@ -11,20 +11,16 @@
     <packaging>pom</packaging>
 
     <description>
-        Execute Voyanta JMETER Performance Test ( Apache JMETER - 3.1+) - Invoke with "mvn verify -Pperformance"
+        Voyanta JMETER Performance Test ( Apache JMETER - 3.1+) - Usage "mvn verify -Pperfbenchmark"
     </description>
 
     <properties>
-        <webapp.protocol>http</webapp.protocol>
-        <webapp.host>www.mozilla.com</webapp.host>
-        <webapp.port>80</webapp.port>
-        <webapp.uris>${project.basedir}/src/test/uris/uris.txt</webapp.uris>
-        <jmeter.analysis.maven.plugin.version>1.0.6</jmeter.analysis.maven.plugin.version>
         <jmeter-maven-plugin.version>2.2.0</jmeter-maven-plugin.version>
+        <jmeter.analysis.maven.plugin.version>1.0.6</jmeter.analysis.maven.plugin.version>
+        <jmeter.version>3.1</jmeter.version>
         <test.duration>30</test.duration>
         <test.threads>10</test.threads>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>kg.apc</groupId>
@@ -32,10 +28,9 @@
             <version>2.1</version>
         </dependency>
     </dependencies>
-
     <profiles>
         <profile>
-            <id>performance</id>
+            <id>perfbenchmark</id>
             <build>
                 <plugins>
                     <plugin>
@@ -50,13 +45,13 @@
                                 </goals>
                                 <configuration>
                                     <tasks>
-                                        <echo>SetUp JMETER with required JARs and Plug-ins</echo>
-                                        <copy todir="${basedir}/target/jmeter/lib/junit">
+                                        <echo>SetUp stateful JMETER instance with required JARs and Plug-ins</echo>
+                                        <copy todir="${project.build.directory}/jmeter/lib/junit">
                                             <fileset dir="./src/main/resources/lib">
                                                 <include name="*.jar" />
                                             </fileset>
                                         </copy>
-                                        <copy todir="${basedir}/target/jmeter/lib/ext">
+                                        <copy todir="${project.build.directory}/jmeter/lib/ext">
                                             <fileset dir="./src/main/resources/extensions">
                                                 <include name="*.jar" />
                                             </fileset>
@@ -125,27 +120,8 @@
                             </dependency>
                         </dependencies>
                         <configuration>
-                            <jmeterVersion>3.1</jmeterVersion>
+                            <jmeterVersion>${jmeter.version}</jmeterVersion>
                             <downloadExtensionDependencies>false</downloadExtensionDependencies>
-                            <propertiesUser>
-                                <!--A user which accesses all URLs-->
-                                <threadgroup00.name>test</threadgroup00.name>
-                                <!--number of threads to use-->
-                                <threadgroup00.numberOfThreads>${test.threads}</threadgroup00.numberOfThreads>
-                                <!--delay of the test in seconds-->
-                                <threadgroup00.scheduledDelay>0</threadgroup00.scheduledDelay>
-                                <!--duration of the test in seconds-->
-                                <threadgroup00.scheduledDuration>${test.duration}</threadgroup00.scheduledDuration>
-                                <!--how long till all threads are up and running in seconds-->
-                                <threadgroup00.rampUp>1</threadgroup00.rampUp>
-                                <!--target throughput of all threads of the group per minute-->
-                                <threadgroup00.throughput>100000000</threadgroup00.throughput>
-                                <!-- use uris from given file -->
-                                <threadgroup00.dataFile>${webapp.uris}</threadgroup00.dataFile>
-                                <protocol>${webapp.protocol}</protocol>
-                                <server>${webapp.host}</server>
-                                <port>${webapp.port}</port>
-                            </propertiesUser>
                             <!--<ignoreResultFailures>true</ignoreResultFailures>-->
                             <!-- The JMeter Maven Plugin will run the JMeter process in its own JVM. You have full control over this JVM
                             and can set the -Xms and -Xmx as well as any command line arguments you require. We suggest that you set the
@@ -173,39 +149,10 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <!--
-                                      source file that contains jmeter result data. Needs to be XML format or a GZIPed XML format
-                                      -->
                             <source>${project.build.directory}/jmeter/results/*jtl</source>
-
-                            <!--
-                            directory where to store analysis report files. At least a file "summary.txt" will be stored here.
-                            -->
                             <targetDirectory>${project.build.directory}/reports</targetDirectory>
-
-                            <!--
-                            Defines groups of requests by URL patterns,
-                            e.g. URIs starting with /mock/page are associated with group "pages". All analysis results are
-                            If there is no such mapping then the threadgroups from the jmeter.xml are used.
-                            -->
-                            <!--<requestGroups>-->
-                            <!--<test>/en-US/firefox/**</test>-->
-                            <!--</requestGroups>-->
-
-                            <!--
-                            Mapping from resource URL to file name. Every resource will be downloaded and stored in 'targetDirectory'
-                            with the given filename. Tokens "_FROM_" and "_TO_" can be used as placeholders. These placeholders will
-                            be replaced by timestamps of execution interval (formatted as ISO8601, e.g. '20111216T145509+0100').
-                            -->
-                            <!--<remoteResources>-->
-                            <!--<property>-->
-                            <!--<name>http://yourhost/path?from=_FROM_&amp;to=_TO_</name>-->
-                            <!--<value>my_resource.txt</value>-->
-                            <!--</property>-->
-                            <!--</remoteResources>-->
                         </configuration>
                     </plugin>
-
                 </plugins>
             </build>
         </profile>
